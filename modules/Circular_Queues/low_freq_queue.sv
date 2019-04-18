@@ -4,7 +4,9 @@ module low_freq_queue (clk, rst_n, lft_smpl, rght_smpl, wrt_smpl, lft_out, rght_
 	output sequencing;
 	output [15:0] lft_out, rght_out;
 	
-	/* instantiate low freq dual port RAM */
-	dualPort1024x16 (.clk(), .we(), .waddr(), .readdr(), .wdata(), .rdata());
-
+	/* state machine */
+	
+	/* instantiate low freq dual port RAMs */
+	dualPort1024x16 left (.clk(clk), .we(), .waddr(), .readdr(), .wdata(lft_smpl), .rdata(lft_out));
+	dualPort1024x16 rght (.clk(clk), .we(), .waddr(), .readdr(), .wdata(rght_smpl), .rdata(rght_out));
 endmodule
