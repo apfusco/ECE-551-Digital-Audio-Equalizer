@@ -1,4 +1,4 @@
-module FIR_B2 (clk, rst_n, lft_in, lft_out, sequencing, rght_in, rght_out);
+module FIR_B1 (clk, rst_n, lft_in, lft_out, sequencing, rght_in, rght_out);
 
 	input clk, rst_n, sequencing;
 	input signed [15:0] lft_in, rght_in;
@@ -23,7 +23,7 @@ module FIR_B2 (clk, rst_n, lft_in, lft_out, sequencing, rght_in, rght_out);
 	
 	/* instantiate coeff rom */
 	wire signed [15:0] dout;
-	ROM_B2 rom(.clk(clk), .addr(addr_in), .dout(dout));
+	ROM_B1 rom(.clk(clk), .addr(addr_in), .dout(dout));
 	
 	/* signed multiplies */
 	wire signed [31:0] lft_in_mult, rght_in_mult; // NOTE: signed might need to be looked at

@@ -38,6 +38,8 @@ module Equalizer(clk,RST_n,LED,ADC_SS_n,ADC_MOSI,ADC_SCLK,ADC_MISO,
 	wire [23:0] aud_in_lft, aud_in_rght;
 	// Connect EQ_engine and spkr_drv.
 	wire [15:0] aud_out_lft, aud_out_rght;
+	// Used for sht_dwn/Flt_n logic.
+	reg [17:0] timer;
 
 
 	/////////////////////////////////////
@@ -57,35 +59,52 @@ module Equalizer(clk,RST_n,LED,ADC_SS_n,ADC_MOSI,ADC_SCLK,ADC_MISO,
 	//////////////////////////////////////
 	// Instantiate BT module interface //
 	////////////////////////////////////
-	BT_intf(.cmd_n(cmd_n), .TX(TX), .RX(RX), .next_n(next_n), .prev_n(prev_n), .clk(clk), .rst_n(rst_n));
+	BT_intf intf(.cmd_n(cmd_n), .TX(TX), .RX(RX), .next_n(next_n), .prev_n(prev_n), .clk(clk), .rst_n(rst_n));
 					
 			
 	//////////////////////////////////////
 	// Instantiate I2S_Slave interface //
 	////////////////////////////////////
-	I2S_Slave(.lft_chnnl(aud_in_lft), .rght_chnnl(aud_in_rght), .vld(vld), .clk(clk), .rst_n(rst_n), 
+	I2S_Slave slave(.lft_chnnl(aud_in_lft), .rght_chnnl(aud_in_rght), .vld(vld), .clk(clk), .rst_n(rst_n), 
 		.I2S_sclk(I2S_sclk), .I2S_ws(I2S_ws), .I2S_data(I2S_data));
 
 
 	//////////////////////////////////////////
 	// Instantiate EQ_engine or equivalent //
 	////////////////////////////////////////
-	EQ_engine engine(.aud_out_lft(aud_out_lft), .aud_out_rght(aud_out_rght), .aud_in_lft(aud_in_lft), 
-		.aud_in_rght(aud_in_rght), .vld(vld), .POT_LP(POT_LP), .POT_B1(POT_B1), .POT_B2(POT_B2), 
+	EQ_engine engine(.aud_out_lft(aud_out_lft), .aud_out_rght(aud_out_rght), .aud_in_lft(aud_in_lft[23:8]), 
+		.aud_in_rght(aud_in_rght[23:8]), .vld(vld), .POT_LP(POT_LP), .POT_B1(POT_B1), .POT_B2(POT_B2), 
 		.POT_B3(POT_B3), .POT_HP(POT_HP), .VOLUME(VOLUME), .clk(clk), .rst_n(rst_n));
 
 	
 	/////////////////////////////////////
 	// Instantiate PDM speaker driver //
 	///////////////////////////////////
-	spkr_drv spkr(.lft_PDM(lft_PDM), .rght_PDM(rght_PDM), .lft_chnnl(aud_lft_out), 
-		.rght_chnnl(aud_out_rght), .vld(), .clk(clk), .rst_n(rst_n));
+	spkr_drv spkr(.lft_PDM(lft_PDM), .rght_PDM(rght_PDM), .lft_chnnl(aud_out_lft), 
+		.rght_chnnl(aud_out_rght), .vld(vld), .clk(clk), .rst_n(rst_n));
 
 	
 	///////////////////////////////////////////////////////////////
 	// Infer sht_dwn/Flt_n logic or incorporate into other unit //
 	/////////////////////////////////////////////////////////////
-	
+	// Flop timer.
+	always @(posedge clk, negedge rst_n) begin
+		if(!rst_n)
+			timer <= 18'h00000;
+		else if(!Flt_n)
+			timer <= 18'h00000;
+		else
+			timer <= timer + 1'b1;
+	end
+	// Flop sht_dwn.
+	always @(posedge clk, negedge rst_n) begin
+		if(!rst_n)
+			sht_dwn <= 1'b1;
+		else if(!Flt_n)
+			sht_dwn <= 1'b1;
+		else if(timer >= 18'd250000)
+			sht_dwn <= 1'b0;
+	end
 	
 	assign LED = 8'h00;
 

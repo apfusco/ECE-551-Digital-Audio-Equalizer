@@ -13,7 +13,7 @@ output [15:0] aud_out_lft, aud_out_rght;	// Audio out.
 
 // Low frequency logic.
 reg sample;
-wire vld_low_freq;							// Will be half as frequent as the vld input.
+reg vld_low_freq;							// Will be half as frequent as the vld input.
 // Connect queues to FIR modules.
 wire [15:0] low_lft, low_rght;						// low_freq_queue output.
 wire [15:0] high_lft, high_rght;					// high_freq_queue output.
@@ -59,16 +59,16 @@ FIR_HP HP(.clk(clk), .rst_n(rst_n), .lft_in(high_rght), .lft_out(FIR_HP_lft),
 //////////////////////////////////////
 // Instantiate band_scale modules. //
 ////////////////////////////////////
-band_scale scale_LP_lft(.scaled(FIR_LP_lft), .POT(POT_LP), .audio(scale_LP_lft));
-band_scale scale_B1_lft(.scaled(FIR_B1_lft), .POT(POT_B1), .audio(scale_B1_lft));
-band_scale scale_B2_lft(.scaled(FIR_B2_lft), .POT(POT_B2), .audio(scale_B2_lft));
-band_scale scale_B3_lft(.scaled(FIR_B3_lft), .POT(POT_B3), .audio(scale_B3_lft));
-band_scale scale_HP_lft(.scaled(FIR_HP_lft), .POT(POT_HP), .audio(scale_HP_lft));
-band_scale scale_LP_rght(.scaled(FIR_LP_rght), .POT(POT_LP), .audio(scale_LP_rght));
-band_scale scale_B1_rght(.scaled(FIR_B1_rght), .POT(POT_B1), .audio(scale_B1_rght));
-band_scale scale_B2_rght(.scaled(FIR_B2_rght), .POT(POT_B2), .audio(scale_B2_rght));
-band_scale scale_B3_rght(.scaled(FIR_B3_rght), .POT(POT_B3), .audio(scale_B3_rght));
-band_scale scale_HP_rght(.scaled(FIR_HP_rght), .POT(POT_HP), .audio(scale_HP_rght));
+band_scale scaleLPlft(.scaled(scale_LP_lft), .POT(POT_LP), .audio(FIR_LP_lft));
+band_scale scaleB1lft(.scaled(scale_B1_lft), .POT(POT_B1), .audio(FIR_B1_lft));
+band_scale scaleB2lft(.scaled(scale_B2_lft), .POT(POT_B2), .audio(FIR_B2_lft));
+band_scale scaleB3lft(.scaled(scale_B3_lft), .POT(POT_B3), .audio(FIR_B3_lft));
+band_scale scaleHPlft(.scaled(scale_HP_lft), .POT(POT_HP), .audio(FIR_HP_lft));
+band_scale scaleLPrght(.scaled(scale_LP_rght), .POT(POT_LP), .audio(FIR_LP_rght));
+band_scale scaleB1rght(.scaled(scale_B1_rght), .POT(POT_B1), .audio(FIR_B1_rght));
+band_scale scaleB2rght(.scaled(scale_B2_rght), .POT(POT_B2), .audio(FIR_B2_rght));
+band_scale scaleB3rght(.scaled(scale_B3_rght), .POT(POT_B3), .audio(FIR_B3_rght));
+band_scale scaleHPrght(.scaled(scale_HP_rght), .POT(POT_HP), .audio(FIR_HP_rght));
 
 /////////////////////////////////////////////
 // Logic to half frequency for one queue. //
@@ -80,8 +80,13 @@ always @(posedge clk, negedge rst_n) begin
 	else if(vld)// This assumes vld will only be asserted for one clk cycle.
 		sample <= ~sample;
 end
-
-assign vld_low_freq = sample & vld;
+// Flop vld_low_freq
+always @(posedge clk, negedge rst_n) begin
+	if(!rst_n)
+		vld_low_freq <= 1'b0;
+	else
+		vld_low_freq <= sample & vld;
+end
 
 /////////////////////////////////
 // Summation and multipliers. //

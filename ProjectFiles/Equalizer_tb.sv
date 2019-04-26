@@ -30,13 +30,84 @@ RN52 iRN52(.clk(clk),.RST_n(RST_n),.cmd_n(cmd_n),.RX(TX_RX),.TX(RX_TX),.I2S_sclk
 //////////////////////////////////////////////
 // Instantiate model of A2D and Slide Pots //
 ////////////////////////////////////////////		   
-A2D_with_Pots iPOTs(.clk(clk),.rst_n(rst_n),.SS_n(ADC_SS_n),.SCLK(ADC_SCLK),.MISO(ADC_MISO),
-                    .MOSI(ADC_MOSI),.LP(LP),.B1(B1),.B2(B2),.B3(B3),.HP(HP),.VOL(VOL));
+A2D_with_Pots iPOTs(.clk(clk),.rst_n(RST_n),.SS_n(ADC_SS_n),.SCLK(ADC_SCLK),.MISO(ADC_MISO),
+	.MOSI(ADC_MOSI),.LP(LP),.B1(B1),.B2(B2),.B3(B3),.HP(HP),.VOL(VOL));
 			
 initial begin
   
-  This is where your magic occurs
-  
+	//This is where your magic occurs
+	RST_n = 1'b0;
+	clk = 1'b0;
+	Flt_n = 1'b1;
+	prev_n = 1'b1;
+	next_n = 1'b1;
+	LP = 12'h000;
+	B1 = 12'h000;
+	B2 = 12'h000;
+	B3 = 12'h000;
+	HP = 12'h000;
+	VOL = 12'h000;
+	@(negedge clk) RST_n = 1'b1;
+	@(posedge clk);
+	LP = 12'hFFF;
+	B1 = 12'hFFF;
+	B2 = 12'hFFF;
+	B3 = 12'hFFF;
+	HP = 12'hFFF;
+	VOL = 12'hFFF;
+	repeat(2000000) @(posedge clk);
+	$stop;
+	LP = 12'h000;
+	B1 = 12'hFFF;
+	B2 = 12'hFFF;
+	B3 = 12'hFFF;
+	HP = 12'hFFF;
+	VOL = 12'hFFF;
+	repeat(2000000) @(posedge clk);
+	$stop;
+	LP = 12'h000;
+	B1 = 12'h000;
+	B2 = 12'hFFF;
+	B3 = 12'hFFF;
+	HP = 12'hFFF;
+	VOL = 12'hFFF;
+	repeat(2000000) @(posedge clk);
+	$stop;
+	LP = 12'h000;
+	B1 = 12'h000;
+	B2 = 12'h000;
+	B3 = 12'hFFF;
+	HP = 12'hFFF;
+	VOL = 12'hFFF;
+	repeat(2000000) @(posedge clk);
+	$stop;
+	LP = 12'h000;
+	B1 = 12'h000;
+	B2 = 12'h000;
+	B3 = 12'h000;
+	HP = 12'hFFF;
+	VOL = 12'hFFF;
+	repeat(2000000) @(posedge clk);
+	$stop;
+	LP = 12'h000;
+	B1 = 12'h000;
+	B2 = 12'h000;
+	B3 = 12'h000;
+	HP = 12'hFFF;
+	VOL = 12'h800;
+	repeat(2000000) @(posedge clk);
+	$stop;
+	LP = 12'hFFF;
+	B1 = 12'h000;
+	B2 = 12'h000;
+	B3 = 12'h000;
+	HP = 12'h000;
+	VOL = 12'h800;
+	repeat(2000000) @(posedge clk);
+	$display("Finished runnning test values.");
+	$stop;
+	$finish;
+	
 end
 
 always
