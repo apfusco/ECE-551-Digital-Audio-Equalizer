@@ -1,3 +1,5 @@
+`timescale 1ns/1ps
+
 module Equalizer_tb();
 
 reg clk,RST_n;
@@ -48,12 +50,49 @@ initial begin
 	HP = 12'h000;
 	VOL = 12'h000;
 	@(negedge clk) RST_n = 1'b1;
+	// Test with all pass bands.
 	@(posedge clk);
 	LP = 12'hFFF;
 	B1 = 12'hFFF;
 	B2 = 12'hFFF;
 	B3 = 12'hFFF;
 	HP = 12'hFFF;
+	VOL = 12'hFFF;
+	repeat(2000000) @(posedge clk);
+	$stop;
+	// Test with only low pass.
+	LP = 12'hFFF;
+	B1 = 12'h000;
+	B2 = 12'h000;
+	B3 = 12'h000;
+	HP = 12'h000;
+	VOL = 12'hFFF;
+	repeat(2000000) @(posedge clk);
+	$stop;
+	// Test with only B1.
+	LP = 12'h000;
+	B1 = 12'hFFF;
+	B2 = 12'h000;
+	B3 = 12'h000;
+	HP = 12'h000;
+	VOL = 12'hFFF;
+	repeat(2000000) @(posedge clk);
+	$stop;
+	// Test with only B2.
+	LP = 12'h000;
+	B1 = 12'h000;
+	B2 = 12'hFFF;
+	B3 = 12'h000;
+	HP = 12'h000;
+	VOL = 12'hFFF;
+	repeat(2000000) @(posedge clk);
+	$stop;
+	// Test with only B3.
+	LP = 12'h000;
+	B1 = 12'h000;
+	B2 = 12'h000;
+	B3 = 12'hFFF;
+	HP = 12'h000;
 	VOL = 12'hFFF;
 	repeat(2000000) @(posedge clk);
 	$stop;
@@ -95,6 +134,22 @@ initial begin
 	B3 = 12'h000;
 	HP = 12'hFFF;
 	VOL = 12'h800;
+	repeat(2000000) @(posedge clk);
+	$stop;
+	LP = 12'h000;
+	B1 = 12'h000;
+	B2 = 12'h000;
+	B3 = 12'h000;
+	HP = 12'hFFF;
+	VOL = 12'hE00;
+	repeat(2000000) @(posedge clk);
+	$stop;
+	LP = 12'h000;
+	B1 = 12'h000;
+	B2 = 12'h000;
+	B3 = 12'h000;
+	HP = 12'hFFF;
+	VOL = 12'h400;
 	repeat(2000000) @(posedge clk);
 	$stop;
 	LP = 12'hFFF;

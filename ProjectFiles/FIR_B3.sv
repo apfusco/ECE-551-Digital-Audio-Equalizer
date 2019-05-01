@@ -2,7 +2,7 @@ module FIR_B3 (clk, rst_n, lft_in, lft_out, sequencing, rght_in, rght_out);
 
 	input clk, rst_n, sequencing;
 	input signed [15:0] lft_in, rght_in;
-	output [15:0] lft_out, rght_out;
+	output reg [15:0] lft_out, rght_out;
 	
 	reg accum, clr_accum, clr_addr;
 	reg [31:0] lft_out_reg, rght_out_reg;

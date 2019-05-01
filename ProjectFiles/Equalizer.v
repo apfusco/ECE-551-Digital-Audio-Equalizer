@@ -105,8 +105,12 @@ module Equalizer(clk,RST_n,LED,ADC_SS_n,ADC_MOSI,ADC_SCLK,ADC_MISO,
 		else if(timer >= 18'd250000)
 			sht_dwn <= 1'b0;
 	end
-	
-	assign LED = 8'h00;
+
+	//////////////////////////////////
+	// Instantiate LED_drv module. //
+	////////////////////////////////
+	//LED_drv LED_drv(.LED(LED), .audio(aud_out_lft), .clk(clk), .rst_n(rst_n));
+	assign LED = aud_out_lft[15:8];
 
 
 endmodule
