@@ -109,8 +109,8 @@ module Equalizer(clk,RST_n,LED,ADC_SS_n,ADC_MOSI,ADC_SCLK,ADC_MISO,
 	//////////////////////////////////
 	// Instantiate LED_drv module. //
 	////////////////////////////////
-	//LED_drv LED_drv(.LED(LED), .audio(aud_out_lft), .clk(clk), .rst_n(rst_n));
-	assign LED = aud_out_lft[15:8];
+	LED_drv LEDs(.LED(LED), .aud_lft(aud_out_lft), .aud_rght(aud_out_rght), .vld(vld), .clk(clk), .rst_n(rst_n));
+	//assign LED = aud_out_lft[15:8];
 
 
 endmodule
